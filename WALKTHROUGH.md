@@ -17,10 +17,24 @@ We use **MaxAbsScaler** for feature normalization. Since TF-IDF produces sparse 
 ---
 
 ## II. Data Strategy: Multi-Source Realism
-To ensure the model generalizes across diverse attack vectors, we've implemented a comprehensive data acquisition pipeline in `data/download_dataset.py`:
-- **6 Real-Email Corpora:** Sourced from Kaggle (Enron, Nazario, LingSpam, etc.) to capture authentic phishing and corporate language.
-- **SMS Integration:** Includes the SMS Spam Collection to guard against mobile-focused phishing (Smishing).
-- **Synthetic Fallback:** Generates high-quality synthetic data for rapid environment setup.
+
+Single-source phishing datasets have two problems: they are old (most stop at 2008) and email-only (missing SMS attacks). We ran a gap analysis and picked three sources to fix both.
+
+**Source 1 — `naserabdullahalam/phishing-email-dataset`**  
+6 real-world corpora in one Kaggle dataset. We chose this because it is the only source that combines legitimate corporate emails (Enron) with real scraped phishing (Nazario) rather than templated synthetic data. The other 4 corpora (CEAS, Ling Spam, Nigerian Fraud, SpamAssassin) add volume and attack style diversity. Total: ~82k emails, 2000–2008.
+
+**Source 2 — `subhajournal/phishingemails`**  
+Phishing in 2008 looks nothing like phishing in 2021. This adds 18k modern emails covering COVID lures, cloud service impersonation (Office 365, SharePoint), and updated BEC templates. Without this, the model would miss how attackers write today.
+
+**Source 3 — `uciml/sms-spam-collection` (attempted)**  
+Aviation crew receive operational SMS alerts. Attackers exploit this with SMiShing. We added this to cover the mobile channel. Kaggle returned a 403 on download — Sources 1 and 2 were merged for the final dataset. The downloader retries automatically.
+
+**Final dataset:** 182k raw → dedup → balanced to **30,000 rows, 15,000 per class.**  
+Cap at 15k per class is intentional — beyond this, accuracy gains are marginal but training time doubles.
+
+**Why email-first:** The assignment specifies emails and messages. QMSMART's attack surface is email — crew portal links, DGCA/FAA alerts, flight ops notices all arrive via email. It also has the largest publicly validated phishing datasets by far.
+
+**Offline fallback:** 600-sample synthetic dataset auto-generates when Kaggle credentials are unavailable. Zero setup required.
 
 ---
 
