@@ -54,8 +54,6 @@ These were not required but solve practical problems:
 | INT8 quantization | Halves model memory, 2–4x faster CPU inference | `app.py` |
 | SHAP explanations | Shows which words drove each prediction | `src/model_comparison.py` |
 | Feedback endpoint | Saves user corrections for retraining | `app.py`, `data/feedback.csv` |
-| Test suite (14 tests) | Unit tests for NLP + API integration tests | `tests/` |
-| CI/CD | Linting + tests on every push | `.github/workflows/ci.yml` |
 
 ---
 

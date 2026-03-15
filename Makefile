@@ -1,14 +1,11 @@
 # PhishGuard AI - Engineering Automation
-# ------------------------------------
 
-.PHONY: install train test run docker-build docker-run clean help
+.PHONY: install train run docker-build docker-run clean help
 
-# Default target
 help:
 	@echo "PhishGuard AI - Available Commands:"
 	@echo "  make install      Install all dependencies"
 	@echo "  make train        Fine-tune DistilBERT model (requires GPU/MPS)"
-	@echo "  make test         Run automated unit tests"
 	@echo "  make run          Start the Flask API and React Dashboard"
 	@echo "  make docker-build Build Docker containers for production"
 	@echo "  make docker-run   Run the full stack via Docker Compose"
@@ -20,9 +17,6 @@ install:
 
 train:
 	python src/train.py
-
-test:
-	PYTHONPATH=. pytest tests/ -v
 
 run:
 	@echo "Starting backend..."
@@ -39,6 +33,4 @@ docker-run:
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
-	rm -rf .pytest_cache
-	rm -rf .coverage
 	@echo "Cleaned up temporary files."

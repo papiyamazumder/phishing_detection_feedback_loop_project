@@ -57,10 +57,9 @@ models/
   *.png                   Confusion matrix, ROC curve, comparison chart
 notebook/
   phishing_detection_experimentation.ipynb
-tests/                    14 tests — unit + API integration
 frontend/                 React dashboard
 docker-compose.yml        One-command deployment
-Makefile                  install / train / test / run targets
+Makefile                  install / train / run targets
 ```
 
 ---
@@ -139,8 +138,7 @@ These were not required by the assignment but I added them because they solve re
 - **INT8 quantization:** Reduces DistilBERT memory by ~50% and speeds up CPU inference 2–4x. Applied automatically for CPU deployments.
 - **SHAP explanations:** Shows which words contributed most to a prediction. Useful for auditing false positives.
 - **Feedback endpoint:** Users can flag incorrect predictions. Feedback is saved to CSV and merged into training data on next retrain cycle.
-- **Automated tests:** 14 tests (unit + API integration) covering preprocessing, keyword detection, and endpoint behavior. Run with `make test`.
-- **CI/CD:** GitHub Actions runs linting and tests on every push (`.github/workflows/ci.yml`).
+- **Docker deployment:** One-command deployment with `docker-compose up --build`
 
 ---
 
@@ -175,7 +173,7 @@ Or with Docker:
 docker-compose up --build
 ```
 
-Note: DistilBERT weights (`models/best_model/`) are not committed (250MB). Run `train.py` to generate them. Everything else is in the repo.
+Note: Run `src/train.py` first to generate DistilBERT weights (~27 min, requires GPU/MPS). The classical model (`phishing_model pkl`) and all evaluation plots are already in the repo and work immediately after clone.
 
 ---
 
