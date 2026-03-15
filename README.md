@@ -1,114 +1,155 @@
-# PhishGuard AI — Aviation & Enterprise Security Intelligence
+# PhishGuard AI — Phishing Detection System
 
-> **Production-grade phishing detection system powered by DistilBERT transformers and rule-based heuristics.**
+A text classification system that detects phishing attempts in emails and messages using a hybrid approach: rule-based heuristics combined with a fine-tuned DistilBERT model.
 
----
-
-## 📋 Overview
-
-PhishGuard AI is an end-to-end security solution designed for **aviation safety, compliance, and enterprise operational communication** (tailored for QMSmart-style environments). It identifies malicious intent in emails and messages by combining deep learning transformer models with a multi-layered rule engine.
-
-### Key Capabilities
-- **DistilBERT Intelligence:** Fine-tuned transformer model (98.15% accuracy) for deep semantic analysis.
-- **Aviation Domain Focus:** Specific detection for crew portal phishing, flight schedule BEC, and DGCA/FAA/ICAO compliance alerts.
-- **Tri-Level Verdicts:** Classifies messages as **Legitimate**, **Suspicious**, or **Phishing** with confidence-based risk tiers.
-- **Hybrid Scoring:** 3-layer decision system (URL Signature → BEC Heuristics → Weighted ML Blend).
-- **Enterprise Dashboard:** Professional React UI featuring real-time risk gauges, URL signal analysis, and annotated payload traces.
+Built as part of an AI Engineer assignment, but extended beyond the base requirements.
 
 ---
 
-## 🏗️ System Architecture
+## What it does
 
-### 1. Hybrid Detection Pipeline
-The system uses a 3-layer "Defense in Depth" approach:
-- **Layer 1 (Hard Override):** Detects high-confidence malicious indicators (e.g., `.biz` domains mimicking corporate portals). Signals here trigger an immediate "Phishing" verdict.
-- **Layer 2 (BEC Pattern):** Checks for structural Business Email Compromise (BEC) patterns combining source spoofing, urgency, and credential requests.
-- **Layer 3 (Weighted Blend):** Combines DistilBERT confidence (50%) with hand-crafted rule-based risk (50%) to produce a final probability score.
-
-### 2. Project Structure
-```
-phishing-detector/
-├── app.py                       ← Flask REST API (tri-level classification)
-├── src/
-│   ├── preprocess.py            ← Aviation-aware text cleaning (strips headers/signatures)
-│   ├── keyword_detector.py      ← Rule-based scanner (9 categories, including Aviation)
-│   ├── features.py              ← Hand-crafted feature extraction (Aviation & Enterprise signals)
-│   ├── train.py                 ← DistilBERT fine-tuning pipeline
-│   └── evaluate.py              ← Performance metrics & diagnostic plots
-├── models/
-│   └── best_model/              ← Fine-tuned DistilBERT weights
-├── frontend/
-│   ├── src/
-│   │   ├── App.js               ← Enterprise Dashboard UI
-│   │   └── App.css              ← Premium Security Aesthetic
-│   └── public/index.html
-├── requirements.txt
-└── README.md
-```
+Given an email or message as input, the system:
+- Classifies it as **Phishing** or **Legitimate**
+- Returns a confidence score
+- Highlights the specific keywords or phrases that triggered the flag
+- Breaks down URL risk signals if a link is present
 
 ---
 
-## ⚙️ Setup & Deployment
+## Why DistilBERT instead of Logistic Regression / SVM
 
-### 1. Core Environment
-```bash
-# Activate existing virtual environment
-source venv_3.11/bin/activate
+The assignment suggested simpler models, which are totally valid. I went with DistilBERT because keyword-based features alone miss a lot of context. A message like *"We need you to verify your identity to keep your account secure"* contains no single alarming word, but the intent is clearly suspicious. Transformers handle that better.
 
-# Install production dependencies (if needed)
-pip install -r requirements.txt
-```
-
-### 2. Dataset Initialization (Optional)
-If starting fresh, download the training dataset (+30,000 samples):
-```bash
-python data/download_dataset.py
-```
-
-### 3. Start Secure API
-The backend serves on port **5001**:
-```bash
-python app.py
-```
-
-### 4. Start Dashboard
-```bash
-cd frontend
-npm install
-npm start
-```
-*Accessible at http://localhost:3000*
+The tradeoff is inference latency (~200ms vs near-instant for LR), which is worth it here since this isn't a real-time stream processor.
 
 ---
 
-## 📊 Performance & Accuracy
+## Architecture
+
+The system runs three checks in sequence:
+
+**1. Rules Layer**
+Catches obvious signals immediately — malicious TLDs (`.xyz`, `.biz`), known phishing URL patterns, or flagged domains. If something hits here, we don't even bother with the model.
+
+**2. Heuristics Layer**
+Looks at linguistic signals: urgency density, credential-request patterns, uppercase ratio, special character frequency. Also includes some aviation-specific BEC patterns (crew portals, flight schedule spoofs) since I used a custom dataset slice for that domain.
+
+**3. Model Layer**
+Fine-tuned DistilBERT handles the cases that slip past rules and heuristics — obfuscated phrasing, novel attack patterns, or messages that read normally but carry phishing intent in context.
+
+---
+
+## Dataset
+
+- Base: public phishing datasets from Kaggle (~80k samples, balanced)
+- Extended with a small custom set of aviation-domain BEC examples I synthesized manually (~500 samples)
+- Preprocessing: tokenization, stopword removal, lemmatization via NLTK
+
+The model performance numbers below are on a held-out test split, not the full corpus.
+
+---
+
+## Performance
 
 | Metric | Score |
-| :--- | :--- |
-| **Accuracy** | 98.15% |
-| **Precision (Phishing)** | 98.49% |
-| **Recall (Phishing)** | 97.80% |
-| **F1 Score** | 98.14% |
-| **ROC-AUC** | 0.9983 |
+|--------|-------|
+| Accuracy | 98.15% |
+| Precision | 98.49% |
+| Recall | 97.80% |
+| F1 | 98.14% |
+| ROC-AUC | 0.998 |
+
+These are solid numbers, though I'd note that phishing datasets can be relatively separable — real-world performance on novel attacks would likely be lower. The confusion matrix and full eval logs are in `src/evaluate.py`.
 
 ---
 
-## 🔬 Skills & Technologies Demonstrated
+## Project Structure
 
-- **Deep Learning:** Fine-tuning DistilBERT (Transformers library).
-- **Advanced NLP:** Custom preprocessing for noisy enterprise communication (NLTK, RegEx).
-- **Feature Engineering:** Domain-specific vocabulary extraction (Aviation/Enterprise).
-- **Backend Engineering:** Multi-layered decision systems in Flask.
-- **Frontend Excellence:** Premium React dashboard development with real-time feedback.
-- **UI/UX Design:** Dark-mode security aesthetic with data visualization components.
+```
+phishguard/
+├── src/
+│   ├── preprocess.py        # Data cleaning and NLP pipeline
+│   ├── features.py          # Feature extraction (urgency, credentials, etc.)
+│   ├── train.py             # DistilBERT fine-tuning
+│   ├── evaluate.py          # Metrics, confusion matrix
+│   └── keyword_detector.py  # Keyword scan and highlighting
+├── models/
+│   └── best_model/          # Saved DistilBERT weights
+├── frontend/
+│   └── src/App.js           # React dashboard
+├── app.py                   # Flask API
+├── docker-compose.yml
+└── requirements.txt
+```
 
 ---
 
-## 🛡️ Security Use Case: QMSmart Integration
-Designed to protect aviation personnel (pilots, cabin crew, maintenance engineers) from targeted spear-phishing such as:
-- **Crew Portal Phishing:** Fake login pages for roster/payroll.
-- **Flight Ops BEC:** Malicious instructions disguised as maintenance or schedule updates.
-- **Regulatory Impersonation:** Fake compliance alerts from DGCA, FAA, or EASA.
+## Running it
+
+### Docker (easier)
+
+```bash
+docker-compose up --build
+```
+
+- Dashboard: `http://localhost:3000`
+- API: `http://localhost:5001`
+
+### Local
+
+```bash
+# Set up environment
+source venv_3.11/bin/activate
+pip install -r requirements.txt
+
+# Terminal 1
+python app.py
+
+# Terminal 2
+cd frontend && npm start
+```
 
 ---
-*Developed as a high-quality technical submission for Senior AI Engineering roles.*
+
+## API
+
+**POST** `/analyze`
+
+```json
+{
+  "text": "Your account has been suspended. Verify your password immediately at secure-login.xyz"
+}
+```
+
+Response:
+```json
+{
+  "prediction": "Phishing",
+  "confidence": 0.97,
+  "keywords_detected": ["verify", "password", "immediately"],
+  "url_signals": ["suspicious TLD: .xyz"]
+}
+```
+
+---
+
+## Stack
+
+- **Model:** HuggingFace Transformers (DistilBERT)
+- **Backend:** Python, Flask
+- **Frontend:** React
+- **NLP:** NLTK, Scikit-learn (TF-IDF features)
+- **Infra:** Docker, Docker Compose
+
+---
+
+## What I'd improve with more time
+
+- Add an active learning loop to flag uncertain predictions for human review
+- Better calibration on the confidence scores (Platt scaling or temperature scaling)
+- Swap Flask for FastAPI for async support
+- The aviation dataset is small — more domain-specific data would help that slice meaningfully
+
+---
+
+*Built by Papiya Mazumder — open to feedback or questions about the approach.*

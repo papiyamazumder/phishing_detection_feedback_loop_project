@@ -1,9 +1,6 @@
 # Environment variables — NEVER commit this
 .env
 
-# Dataset (large file)
-data/dataset.csv
-
 # Trained model weights (very large)
 models/
 
