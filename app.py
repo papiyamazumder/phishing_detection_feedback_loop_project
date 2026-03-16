@@ -2,7 +2,7 @@
 app.py  — Flask REST API for PhishGuard AI
 -------------------------------------------
 Serves the trained DistilBERT model as a REST API for aviation and
-enterprise phishing detection (QMSmart-style security platform).
+enterprise phishing detection (Aviation-Enterprise style security platform).
 
 ENDPOINTS:
   POST /api/predict       — classify a message (main endpoint)

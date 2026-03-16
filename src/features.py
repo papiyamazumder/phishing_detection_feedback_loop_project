@@ -3,7 +3,7 @@ features.py
 -----------
 Extracts numerical features from text for the PhishGuard AI pipeline.
 
-Designed for **aviation safety & compliance environments** (QMSmart-style).
+Designed for **aviation safety & compliance environments** (Aviation-Enterprise style).
 Features supplement the DistilBERT model with transparent, explainable signals.
 
 FEATURE CATEGORIES:

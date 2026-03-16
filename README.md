@@ -1,8 +1,7 @@
 # PhishGuard AI
 
 Phishing detection system for emails and sms. Uses a fine-tuned DistilBERT transformer combined with a rule-based keyword scanner. Includes a React dashboard and Flask API.
-
-> Assignment submission for AI Engineer role at QMSMART.  
+ 
 > Candidate: Papiya Mazumder
 
 ---
@@ -80,7 +79,7 @@ Two separate pipelines because DistilBERT and classical models need different in
 
 - **Structural:** message length, uppercase ratio, exclamation marks, URL count, dollar signs, IP URLs
 - **Keyword scores:** urgency, credential harvesting, threats, financial, lures — scored using a saturation scale (1 hit = 30, 2 = 65, 3 = 85, 4+ = 100) to prevent longer messages from scoring artificially high
-- **Aviation/Enterprise:** crew portal mentions, DGCA/FAA impersonation, IT helpdesk, payroll — relevant to QMSMART's use case
+- **Aviation/Enterprise:** crew portal mentions, DGCA/FAA impersonation, IT helpdesk, payroll — relevant to Aviation industry's use case
 - **URL signals:** suspicious TLD count, URL-to-text ratio
 - **Contextual combinations:** 17 dangerous keyword pairs like `("verify", "immediately")` and `("crew portal", "verify")`
 

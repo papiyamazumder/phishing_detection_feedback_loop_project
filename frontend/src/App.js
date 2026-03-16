@@ -355,7 +355,7 @@ export default function App() {
       <main className="main">
         {/* ── HERO ── */}
         <section className="hero">
-          <div className="hero-badge">Aviation Compliance · QMSmart Intelligence</div>
+          <div className="hero-badge">Aviation Compliance · Enterprise Intelligence</div>
           <h2>Threat Detection Hub</h2>
           <p className="hero-sub">
             Enterprise-grade phishing analysis for aviation communication.
@@ -620,7 +620,7 @@ Or upload a .eml, .txt, or .pdf file using the button below.`}
       <footer className="footer">
         <div className="footer-content">
           <p>
-            PhishGuard AI · Phishing Detection & Analysis Platform · © 2026 QMSMART Technologies
+            PhishGuard AI · Phishing Detection & Analysis Platform · © 2026 Aviation Enterprise Technologies
           </p>
           <p className="footer-sub">
             Powered by DistilBERT Transformer · Built with React, Flask & PyTorch

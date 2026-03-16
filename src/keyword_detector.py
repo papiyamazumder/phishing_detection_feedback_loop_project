@@ -4,7 +4,7 @@ keyword_detector.py
 Rule-based phishing keyword scanner — 9 categories.
 
 Designed for enterprise environments including **aviation safety, compliance,
-and operational communication** (e.g., QMSmart-style platforms).
+and operational communication** (e.g., Aviation-Enterprise style platforms).
 
 CATEGORIES:
   1. urgency              — time pressure tactics
