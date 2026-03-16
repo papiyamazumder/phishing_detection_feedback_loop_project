@@ -2,7 +2,7 @@
 
 Phishing detection system for emails and sms. Uses a fine-tuned DistilBERT transformer combined with a rule-based keyword scanner. Includes a React dashboard and Flask API.
  
-> Candidate: Papiya Mazumder
+> Built by: Papiya Mazumder
 
 ---
 
